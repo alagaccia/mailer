@@ -37,6 +37,19 @@ function config($key, $default = null) {
 
 // Configurazione Error Logging
 $logFile = __DIR__ . '/../storage/logs/app.log';
+$logDir = dirname($logFile);
+
+// Crea la cartella dei log se non esiste
+if (!is_dir($logDir)) {
+    mkdir($logDir, 0775, true);
+}
+
+// Se il file non esiste, prova a crearlo
+if (!file_exists($logFile)) {
+    touch($logFile);
+    chmod($logFile, 0664);
+}
+
 ini_set('display_errors', 0);
 ini_set('log_errors', 1);
 ini_set('error_log', $logFile);
