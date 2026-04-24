@@ -35,3 +35,29 @@ if (preg_match('/API_KEY=\s*$/m', $envContent) || !preg_match('/API_KEY=./', $en
 } else {
     echo "API_KEY già presente in .env.\n";
 }
+
+// Creazione cartelle di sistema e log
+$directories = [
+    $root . '/storage',
+    $root . '/storage/logs'
+];
+
+foreach ($directories as $dir) {
+    if (!is_dir($dir)) {
+        if (mkdir($dir, 0777, true)) {
+            echo "Cartella creata: $dir\n";
+        }
+    }
+    // Assicuriamoci che i permessi siano corretti (0777 per permettere a PHP/Apache di scrivere)
+    chmod($dir, 0777);
+}
+
+// Creazione file log
+$logFile = $root . '/storage/logs/app.log';
+if (!file_exists($logFile)) {
+    touch($logFile);
+    echo "File log creato: $logFile\n";
+}
+chmod($logFile, 0666);
+
+echo "Configurazione permessi completata.\n";
