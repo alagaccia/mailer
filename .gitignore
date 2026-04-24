@@ -1,4 +1,3 @@
 .env
 error_log
 /vendor/
-composer.lock
