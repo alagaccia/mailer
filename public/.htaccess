@@ -1,0 +1,35 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # 1. Se l'utente visita la ROOT, lo mando a /dashboard (URL PULITO)
+    # Usiamo un redirect relativo per evitare il percorso fisico del server
+    RewriteRule ^$ dashboard [R=301,L]
+
+    # 2. Mappa l'URL /api verso index.php
+    RewriteRule ^api/?$ index.php [NC,L]
+
+    # 3. Rimuovi l'estensione .php (es. /dashboard richiama dashboard.php)
+    # Controlla che il file esista prima di riscrivere
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME}.php -f
+    RewriteRule ^([^\.]+)$ $1.php [NC,L]
+
+    # 4. Fix per l'autenticazione Basic Auth/FastCGI su Serverplan
+    RewriteCond %{HTTP:Authorization} ^(.+)$
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
+
+    # 5. Passa l'header X-API-KEY a PHP
+    SetEnvIfNoCase ^X-API-KEY$ ^(.*)$ HTTP_X_API_KEY=$1
+</IfModule>
+
+# SP BEGIN php handler
+<IfModule mod_fcgid.c>
+          AddHandler fcgid-script .php .php5 .php7 .phtml
+          FcgidWrapper    /usr/local/cpanel/cgi-sys/sp-ea-php83 .php
+          FcgidWrapper    /usr/local/cpanel/cgi-sys/sp-ea-php83 .php5
+          FcgidWrapper    /usr/local/cpanel/cgi-sys/sp-ea-php83 .php7
+          FcgidWrapper    /usr/local/cpanel/cgi-sys/sp-ea-php83 .phtml
+</IfModule>
+# SP END php handler
+

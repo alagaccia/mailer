@@ -1,0 +1,14 @@
+# Impedisce la visualizzazione delle cartelle
+Options -Indexes
+
+# Protegge il file .env e i file di configurazione
+<FilesMatch "^\.env|composer\.(json|lock)|migrate\.php|worker\.php">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Se il Document Root non è già puntato su /public, 
+# queste righe reindirizzano tutto il traffico lì.
+RewriteEngine On
+RewriteCond %{REQUEST_URI} !^/public/
+RewriteRule ^(.*)$ public/$1 [L]
