@@ -37,11 +37,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $controller = new EmailController();
-    $result = $controller->store($data);
-    
-    http_response_code($result['status']);
-    echo json_encode($result['response']);
+    try {
+        $controller = new EmailController();
+        $result = $controller->store($data);
+        
+        http_response_code($result['status']);
+        echo json_encode($result['response']);
+    } catch (\Throwable $e) {
+        $logFile = __DIR__ . '/../api_errors.log';
+        $logMessage = "[" . date('Y-m-d H:i:s') . "] ERROR: " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine() . "\n";
+        $logMessage .= "Stack trace:\n" . $e->getTraceAsString() . "\n";
+        $logMessage .= "Request data: " . $jsonInput . "\n";
+        $logMessage .= str_repeat("-", 80) . "\n";
+        
+        file_put_contents($logFile, $logMessage, FILE_APPEND);
+
+        http_response_code(500);
+        echo json_encode([
+            'error' => 'Internal Server Error',
+            'message' => 'An unexpected error occurred. Check the logs.'
+        ]);
+    }
 } else {
     // 3. GESTIONE METODO ERRATO
     http_response_code(405);

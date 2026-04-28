@@ -1,3 +1,4 @@
 .env
 error_log
 /vendor/
+api_errors.log
