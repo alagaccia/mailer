@@ -1,6 +1,8 @@
 <?php
 
-return "CREATE TABLE IF NOT EXISTS email_queue (
+return function() {
+    $prefix = getenv('DB_PREFIX') ?: '';
+    return "CREATE TABLE IF NOT EXISTS {$prefix}email_queue (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     recipient VARCHAR(255) NOT NULL,
     subject VARCHAR(255) NOT NULL,
@@ -16,3 +18,4 @@ return "CREATE TABLE IF NOT EXISTS email_queue (
     INDEX email_queue_status_index (status),
     INDEX email_queue_recipient_index (recipient)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+};

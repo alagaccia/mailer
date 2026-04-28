@@ -13,7 +13,8 @@ class EmailQueue {
 
     public function create($data) {
         $attachments = (isset($data['attachments']) && !empty($data['attachments'])) ? json_encode($data['attachments']) : null;
-        $stmt = $this->db->prepare("INSERT INTO email_queue (recipient, subject, body, attachments) VALUES (?, ?, ?, ?)");
+        $tableName = Database::getPrefix() . 'email_queue';
+        $stmt = $this->db->prepare("INSERT INTO $tableName (recipient, subject, body, attachments) VALUES (?, ?, ?, ?)");
         $stmt->execute([
             $data['recipient'],
             $data['subject'],
@@ -24,26 +25,30 @@ class EmailQueue {
     }
 
     public function getPending($limit = 10) {
-        return $this->db->query("SELECT * FROM email_queue WHERE status = 'pending' LIMIT $limit")
+        $tableName = Database::getPrefix() . 'email_queue';
+        return $this->db->query("SELECT * FROM $tableName WHERE status = 'pending' LIMIT $limit")
                         ->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function updateStatus($id, $status, $error = null) {
+        $tableName = Database::getPrefix() . 'email_queue';
         if ($status === 'sent') {
-            $stmt = $this->db->prepare("UPDATE email_queue SET status = ?, last_error = ?, attempts = attempts + 1, sent_at = CURRENT_TIMESTAMP WHERE id = ?");
+            $stmt = $this->db->prepare("UPDATE $tableName SET status = ?, last_error = ?, attempts = attempts + 1, sent_at = CURRENT_TIMESTAMP WHERE id = ?");
         } else {
-            $stmt = $this->db->prepare("UPDATE email_queue SET status = ?, last_error = ?, attempts = attempts + 1 WHERE id = ?");
+            $stmt = $this->db->prepare("UPDATE $tableName SET status = ?, last_error = ?, attempts = attempts + 1 WHERE id = ?");
         }
         $stmt->execute([$status, $error, $id]);
     }
 
     public function markAsSent($id) {
-        $stmt = $this->db->prepare("UPDATE email_queue SET status = 'sent', sent_at = CURRENT_TIMESTAMP WHERE id = ? AND status != 'sent'");
+        $tableName = Database::getPrefix() . 'email_queue';
+        $stmt = $this->db->prepare("UPDATE $tableName SET status = 'sent', sent_at = CURRENT_TIMESTAMP WHERE id = ? AND status != 'sent'");
         return $stmt->execute([$id]);
     }
 
     public function getById($id) {
-        $stmt = $this->db->prepare("SELECT * FROM email_queue WHERE id = ?");
+        $tableName = Database::getPrefix() . 'email_queue';
+        $stmt = $this->db->prepare("SELECT * FROM $tableName WHERE id = ?");
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }

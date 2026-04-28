@@ -21,7 +21,9 @@ foreach ($files as $file) {
     echo "Eseguendo: $file... ";
 
     try {
-        $sql = require $migrationsPath . $file;
+        $migration = require $migrationsPath . $file;
+        // Se la migrazione è una closure, la eseguiamo; altrimenti usiamo il risultato direttamente
+        $sql = is_callable($migration) ? $migration() : $migration;
         $db->exec($sql);
         echo "SUCCESS\n";
     } catch (PDOException $e) {

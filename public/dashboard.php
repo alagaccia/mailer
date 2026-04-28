@@ -132,17 +132,18 @@ if (!empty($filterDateTo)) {
 $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
 
 // Recupero statistiche TOTALI (tutte le email)
+$tableName = Database::getPrefix() . 'email_queue';
 $counts = $db->query("
     SELECT 
         COUNT(*) as total,
         SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending,
         SUM(CASE WHEN status = 'sent' THEN 1 ELSE 0 END) as sent,
         SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END) as failed
-    FROM email_queue
+    FROM $tableName
 ")->fetch();
 
 // Recupero il totale delle righe FILTRATE
-$stmtCount = $db->prepare("SELECT COUNT(*) as total FROM email_queue $whereClause");
+$stmtCount = $db->prepare("SELECT COUNT(*) as total FROM $tableName $whereClause");
 foreach ($params as $key => $value) {
     $stmtCount->bindValue($key, $value);
 }
@@ -157,7 +158,7 @@ $page = isset($_GET['page']) ? max(1, min((int) $_GET['page'], $totalPages)) : 1
 $offset = ($page - 1) * $perPage;
 
 // Recupero email con paginazione e filtri
-$stmtEmail = $db->prepare("SELECT * FROM email_queue $whereClause ORDER BY id DESC LIMIT :limit OFFSET :offset");
+$stmtEmail = $db->prepare("SELECT * FROM $tableName $whereClause ORDER BY id DESC LIMIT :limit OFFSET :offset");
 foreach ($params as $key => $value) {
     $stmtEmail->bindValue($key, $value);
 }

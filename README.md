@@ -40,6 +40,7 @@ DB_HOST=localhost
 DB_NAME=nome_database
 DB_USER=utente_db
 DB_PASS=password_db
+DB_PREFIX=prefisso_db
 
 SMTP_HOST=smtp.esempio.it
 SMTP_USER=email@esempio.it
@@ -78,7 +79,7 @@ SMTP_FROM_NAME="Nome Mittente"
 Per processare la coda automaticamente, configura un Cron Job che esegua il worker ogni minuto:
 
 ```cron
-* * * * * php /percorso/progetto/worker.php >> /percorso/progetto/storage/logs/cron.log 2>&1
+* * * * * cd percorso/progetto && php worker.php >> /percorso/progetto/storage/logs/cron.log 2>&1
 ```
 
 ## Licenza

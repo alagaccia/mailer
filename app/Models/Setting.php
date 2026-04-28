@@ -9,7 +9,8 @@ class Setting
     public static function get($name, $default = null)
     {
         $db = Database::getInstance();
-        $stmt = $db->prepare("SELECT value FROM settings WHERE name = :name LIMIT 1");
+        $tableName = Database::getPrefix() . 'settings';
+        $stmt = $db->prepare("SELECT value FROM $tableName WHERE name = :name LIMIT 1");
         $stmt->execute([':name' => $name]);
         $row = $stmt->fetch();
         return $row ? $row['value'] : $default;
@@ -18,7 +19,8 @@ class Setting
     public static function set($name, $value)
     {
         $db = Database::getInstance();
-        $stmt = $db->prepare("INSERT INTO settings (name, value) VALUES (:name, :value) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+        $tableName = Database::getPrefix() . 'settings';
+        $stmt = $db->prepare("INSERT INTO $tableName (name, value) VALUES (:name, :value) ON DUPLICATE KEY UPDATE value = VALUES(value)");
         $stmt->execute([':name' => $name, ':value' => $value]);
     }
 }
