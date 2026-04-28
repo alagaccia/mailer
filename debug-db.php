@@ -18,7 +18,7 @@ echo "--- Variabili d'ambiente caricate ---\n";
 echo "DB_HOST: " . (getenv('DB_HOST') ?: '(NON TROVATO)') . "\n";
 echo "DB_NAME: " . (getenv('DB_NAME') ?: '(NON TROVATO)') . "\n";
 echo "DB_USER: " . (getenv('DB_USER') ?: '(NON TROVATO)') . "\n";
-echo "DB_PASS: " . (getenv('DB_PASS') ? '***' . substr(getenv('DB_PASS'), -3) : '(NON TROVATO)') . "\n";
+echo "DB_PASS: " . (getenv('DB_PASS') ?: '(NON TROVATO)') . "\n";
 echo "DB_PREFIX: " . (getenv('DB_PREFIX') ?: '(NON TROVATO)') . "\n";
 
 echo "\n--- Tentativo connessione ---\n";
