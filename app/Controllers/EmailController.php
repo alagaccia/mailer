@@ -127,10 +127,13 @@ class EmailController {
                 ]);
             }
 
-            // Trigger immediato del worker
+            // Trigger immediato del worker se possibile
             $workerPath = dirname(__DIR__, 2) . "/worker.php";
-            shell_exec("/usr/local/bin/php $workerPath > /dev/null 2>&1 &");
-
+            if (function_exists('shell_exec')) {
+                @\shell_exec("/usr/local/bin/php $workerPath > /dev/null 2>&1 &");
+            } elseif (function_exists('exec')) {
+                @\exec("/usr/local/bin/php $workerPath > /dev/null 2>&1 &");
+            }
             return [
                 'status' => 201, 
                 'response' => [
